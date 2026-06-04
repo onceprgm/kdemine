@@ -1,0 +1,21 @@
+{
+    "title": "KDE 扫雷",
+    "subtitle": "战术扫雷模块",
+    "new_game": "新游戏",
+    "settings": "设置",
+    "exit": "退出",
+    "difficulty": "难度级别",
+    "noobs": "新手模式",
+    "normal": "普通模式",
+    "hardcore": "困难模式",
+    "back": "返回",
+    "theme": "界面主题",
+    "lang": "语言设置",
+    "abandon": "放弃游戏",
+    "open_config": "打开配置文件夹",
+    "grid_placeholder": "游戏网格",
+    "custom_title": "自定义游戏选项",
+    "rows": "行数",
+    "cols": "列数",
+    "launch": "开始游戏"
+}

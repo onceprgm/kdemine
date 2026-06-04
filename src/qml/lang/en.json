@@ -1,0 +1,21 @@
+{
+    "title": "KDE MINE",
+    "subtitle": "Tactical Sweeper Module",
+    "new_game": "New Game",
+    "settings": "Settings",
+    "exit": "Exit",
+    "difficulty": "Difficulty Level",
+    "noobs": "For Noobs",
+    "normal": "Normal",
+    "hardcore": "Hardcore",
+    "back": "Back",
+    "theme": "UI Theme",
+    "lang": "Language",
+    "abandon": "Abandon Game",
+    "open_config": "Open Config Folder",
+    "grid_placeholder": "Game Grid",
+    "custom_title": "Custom Game Options",
+    "rows": "Rows",
+    "cols": "Columns",
+    "launch": "Launch Game"
+}

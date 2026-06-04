@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=KDE Mine
+Comment=Tactical Sweeper Module
+Exec=kdemine
+Icon=kdemine
+Terminal=false
+Categories=Game;LogicGame;
