@@ -1,3 +1,4 @@
+import "."
 import QtQuick
 import QtQuick.Controls
 
@@ -6,11 +7,11 @@ Column {
     spacing: 16
     anchors.centerIn: parent
 
-    property int maxGridWidth: mainWindow.width - 48
-    property int maxGridHeight: mainWindow.height - 180
+    property int maxGridWidth: mainWindow.width - Style.gridMargin
+    property int maxGridHeight: mainWindow.height - Style.gridVerticalOffset
 
     property int cellSpacing: configManager.activeTheme === "classic" ? 0 : 2
-    property int maxCellSize: configManager.activeTheme === "classic" ? 24 : 28
+    property int maxCellSize: configManager.activeTheme === "classic" ? Style.classicCellSize : Style.modernCellSize
 
     property int calculatedCellSize: {
         var r = gameEngine.board.rows
@@ -21,7 +22,7 @@ Column {
         var hLimit = (maxGridHeight - (r - 1) * cellSpacing) / r
 
         var size = Math.min(wLimit, hLimit)
-        return Math.min(maxCellSize, Math.max(12, Math.floor(size)))
+        return Math.min(maxCellSize, Math.max(Style.minCellSize, Math.floor(size)))
     }
 
     Rectangle {
@@ -75,21 +76,21 @@ Column {
             anchors.verticalCenter: parent.verticalCenter
             text: {
                 var mines = gameEngine.minesRemaining
-                var label = (configManager.translations && configManager.translations["lang"] === "Language" ? "Mines: " : "Мины: ")
+                var label = (configManager.translations && configManager.translations["mines"]) || "Mines"
                 return configManager.activeTheme === "classic" 
-                    ? label + (mines < 100 ? (mines < 10 ? "00" + mines : "0" + mines) : mines)
-                    : label + mines
+                    ? label + ": " + (mines < 100 ? (mines < 10 ? "00" + mines : "0" + mines) : mines)
+                    : label + ": " + mines
             }
             color: configManager.textColor
             font.bold: true
             font.pixelSize: 15
-            font.family: configManager.activeTheme === "classic" ? "Courier" : "sans-serif"
+            font.family: configManager.activeTheme === "classic" ? Style.classicFont : Style.modernFont
         }
 
         Button {
             id: restartBtn
-            width: 36
-            height: 36
+            width: Style.restartBtnSize
+            height: Style.restartBtnSize
             anchors.centerIn: parent
             
             contentItem: Text {
@@ -163,15 +164,15 @@ Column {
             anchors.verticalCenter: parent.verticalCenter
             text: {
                 var t = gameEngine.elapsedTime
-                var label = (configManager.translations && configManager.translations["lang"] === "Language" ? "Time: " : "Время: ")
+                var label = (configManager.translations && configManager.translations["time"]) || "Time"
                 return configManager.activeTheme === "classic"
-                    ? label + (t < 100 ? (t < 10 ? "00" + t : "0" + t) : t)
-                    : label + t + "s"
+                    ? label + ": " + (t < 100 ? (t < 10 ? "00" + t : "0" + t) : t)
+                    : label + ": " + t + "s"
             }
             color: configManager.textColor
             font.bold: true
             font.pixelSize: 15
-            font.family: configManager.activeTheme === "classic" ? "Courier" : "sans-serif"
+            font.family: configManager.activeTheme === "classic" ? Style.classicFont : Style.modernFont
         }
     }
 
@@ -236,6 +237,7 @@ Column {
                         delegate: CellWidget {
                             row: rowIdx
                             col: index
+                            cellSize: gameScreen.calculatedCellSize
                         }
                     }
                 }

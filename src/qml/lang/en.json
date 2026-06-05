@@ -17,5 +17,7 @@
     "custom_title": "Custom Game Options",
     "rows": "Rows",
     "cols": "Columns",
-    "launch": "Launch Game"
+    "launch": "Launch Game",
+    "mines": "Mines",
+    "time": "Time"
 }

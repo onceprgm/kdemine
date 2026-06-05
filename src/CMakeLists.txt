@@ -12,6 +12,8 @@ qt_add_executable(kdemine
 
 file(COPY qml/assets DESTINATION ${CMAKE_BINARY_DIR}/qml)
 
+set_source_files_properties(qml/Style.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+
 qt_add_qml_module(kdemine
     URI kdemine
     VERSION 1.0
@@ -25,6 +27,7 @@ qt_add_qml_module(kdemine
         qml/GameScreen.qml
         qml/CellWidget.qml
         qml/CustomScreen.qml
+        qml/Style.qml
     RESOURCES
         qml/assets/icon.png
         qml/lang/en.json

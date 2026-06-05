@@ -1,3 +1,4 @@
+import "."
 import QtQuick
 import QtQuick.Controls
 
@@ -67,6 +68,31 @@ Window {
         onTapped: (eventPoint) => contextMenu.popup()
     }
 
+    component RadioMenuItem : MenuItem {
+        id: menuItem
+        checkable: true
+        
+        indicator: Rectangle {
+            implicitWidth: Style.contextMenuIndicatorSize
+            implicitHeight: Style.contextMenuIndicatorSize
+            x: menuItem.mirrored ? menuItem.width - width - menuItem.rightPadding : menuItem.leftPadding
+            y: menuItem.topPadding + (menuItem.availableHeight - height) / 2
+            radius: Style.contextMenuIndicatorSize / 2
+            color: "transparent"
+            border.color: configManager.textColor
+            border.width: 1
+
+            Rectangle {
+                width: Style.contextMenuIndicatorDotSize
+                height: Style.contextMenuIndicatorDotSize
+                anchors.centerIn: parent
+                radius: Style.contextMenuIndicatorDotSize / 2
+                color: configManager.accentColor
+                visible: menuItem.checked
+            }
+        }
+    }
+
     Menu {
         id: contextMenu
         
@@ -78,15 +104,13 @@ Window {
         
         Menu {
             title: (configManager.translations && configManager.translations["theme"]) || ""
-            MenuItem {
+            RadioMenuItem {
                 text: "Breeze Dark"
-                checkable: true
                 checked: configManager.activeTheme === "breeze"
                 onTriggered: configManager.activeTheme = "breeze"
             }
-            MenuItem {
+            RadioMenuItem {
                 text: "Classic Retro"
-                checkable: true
                 checked: configManager.activeTheme === "classic"
                 onTriggered: configManager.activeTheme = "classic"
             }
@@ -94,21 +118,18 @@ Window {
 
         Menu {
             title: (configManager.translations && configManager.translations["lang"]) || ""
-            MenuItem {
+            RadioMenuItem {
                 text: "English"
-                checkable: true
                 checked: configManager.activeLanguage === "en"
                 onTriggered: configManager.activeLanguage = "en"
             }
-            MenuItem {
+            RadioMenuItem {
                 text: "Русский"
-                checkable: true
                 checked: configManager.activeLanguage === "ru"
                 onTriggered: configManager.activeLanguage = "ru"
             }
-            MenuItem {
+            RadioMenuItem {
                 text: "中文"
-                checkable: true
                 checked: configManager.activeLanguage === "zh"
                 onTriggered: configManager.activeLanguage = "zh"
             }
@@ -156,17 +177,6 @@ Window {
         GameScreen {
             anchors.centerIn: parent
             visible: configManager.currentScreen === "game"
-        }
-    }
-
-    Component.onCompleted: {
-        var sysLang = Qt.locale().name.substring(0, 2);
-        if (sysLang === "ru") {
-            activeLanguage = "ru";
-        } else if (sysLang === "zh") {
-            activeLanguage = "zh";
-        } else {
-            activeLanguage = "en";
         }
     }
 }

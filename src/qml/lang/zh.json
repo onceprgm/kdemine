@@ -17,5 +17,7 @@
     "custom_title": "自定义游戏选项",
     "rows": "行数",
     "cols": "列数",
-    "launch": "开始游戏"
+    "launch": "开始游戏",
+    "mines": "地雷",
+    "time": "时间"
 }

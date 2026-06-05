@@ -1,3 +1,4 @@
+import "."
 import QtQuick
 import QtQuick.Controls
 
@@ -12,7 +13,7 @@ Column {
         color: configManager.textColor
         font.pixelSize: 26
         font.bold: true
-        font.family: configManager.activeTheme === "classic" ? "Courier" : "sans-serif"
+        font.family: configManager.activeTheme === "classic" ? Style.classicFont : Style.modernFont
         horizontalAlignment: Text.AlignHCenter
         anchors.horizontalCenter: parent.horizontalCenter
         bottomPadding: 15
@@ -27,7 +28,7 @@ Column {
             color: configManager.textColor
             font.bold: true
             font.pixelSize: 14
-            font.family: configManager.activeTheme === "classic" ? "Courier" : "sans-serif"
+            font.family: configManager.activeTheme === "classic" ? Style.classicFont : Style.modernFont
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
@@ -50,7 +51,7 @@ Column {
             color: configManager.textColor
             font.bold: true
             font.pixelSize: 14
-            font.family: configManager.activeTheme === "classic" ? "Courier" : "sans-serif"
+            font.family: configManager.activeTheme === "classic" ? Style.classicFont : Style.modernFont
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
@@ -73,7 +74,7 @@ Column {
             color: configManager.textColor
             font.bold: true
             font.pixelSize: 14
-            font.family: configManager.activeTheme === "classic" ? "Courier" : "sans-serif"
+            font.family: configManager.activeTheme === "classic" ? Style.classicFont : Style.modernFont
             anchors.horizontalCenter: parent.horizontalCenter
         }
 

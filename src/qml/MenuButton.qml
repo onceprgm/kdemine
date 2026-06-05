@@ -1,3 +1,4 @@
+import "."
 import QtQuick
 import QtQuick.Controls
 
@@ -15,7 +16,7 @@ Button {
         color: btn.enabled ? configManager.textColor : "#808080"
         font.pixelSize: 14
         font.bold: true
-        font.family: configManager.activeTheme === "classic" ? "Courier" : "sans-serif"
+        font.family: configManager.activeTheme === "classic" ? Style.classicFont : Style.modernFont
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
     }

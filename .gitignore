@@ -1,5 +1,11 @@
 build/
+releases/
+
 .vscode/
 .cache/
+/.clangd/
+
 compile_commands.json
 build.sh
+release.sh
+*.tar.gz

@@ -1,3 +1,4 @@
+import "."
 import QtQuick
 import QtQuick.Controls
 
@@ -5,11 +6,12 @@ Item {
     id: cellWidget
     property int row: 0
     property int col: 0
+    property int cellSize: 28
 
     property var cellData: null
 
-    width: gameScreen.calculatedCellSize
-    height: gameScreen.calculatedCellSize
+    width: cellSize
+    height: cellSize
 
     Connections {
         target: gameEngine.board
@@ -84,8 +86,8 @@ Item {
             visible: cellData && cellData.isRevealed && !cellData.isMine && cellData.adjacentMines > 0
             text: cellData ? cellData.adjacentMines : ""
             font.bold: true
-            font.pixelSize: Math.max(8, gameScreen.calculatedCellSize - (configManager.activeTheme === "classic" ? 10 : 12))
-            font.family: configManager.activeTheme === "classic" ? "Courier" : "sans-serif"
+            font.pixelSize: Math.max(8, Math.floor(cellSize - (configManager.activeTheme === "classic" ? Style.classicFontOffset : Style.modernFontOffset)))
+            font.family: configManager.activeTheme === "classic" ? Style.classicFont : Style.modernFont
             color: {
                 if (!cellData) return "#ffffff"
                 switch (cellData.adjacentMines) {
@@ -105,8 +107,8 @@ Item {
         Item {
             id: classicMineIcon
             anchors.centerIn: parent
-            width: gameScreen.calculatedCellSize * 0.8
-            height: gameScreen.calculatedCellSize * 0.8
+            width: Math.floor(cellSize * 0.8)
+            height: Math.floor(cellSize * 0.8)
             visible: cellData && cellData.isRevealed && cellData.isMine && configManager.activeTheme === "classic"
 
             Repeater {
@@ -114,7 +116,7 @@ Item {
                 Rectangle {
                     anchors.centerIn: parent
                     width: 2
-                    height: gameScreen.calculatedCellSize * 0.65
+                    height: Math.floor(cellSize * 0.65)
                     color: "#000000"
                     rotation: index * 45
                     
@@ -137,9 +139,9 @@ Item {
 
             Rectangle {
                 anchors.centerIn: parent
-                width: gameScreen.calculatedCellSize * 0.4
-                height: gameScreen.calculatedCellSize * 0.4
-                radius: width / 2
+                width: Math.floor(cellSize * 0.4)
+                height: Math.floor(cellSize * 0.4)
+                radius: Math.floor(width / 2)
                 color: "#000000"
 
                 Rectangle {
@@ -156,9 +158,9 @@ Item {
         Rectangle {
             id: breezeMineIcon
             anchors.centerIn: parent
-            width: gameScreen.calculatedCellSize * 0.35
-            height: gameScreen.calculatedCellSize * 0.35
-            radius: width / 2
+            width: Math.floor(cellSize * 0.35)
+            height: Math.floor(cellSize * 0.35)
+            radius: Math.floor(width / 2)
             color: configManager.accentColor
             visible: cellData && cellData.isRevealed && cellData.isMine && configManager.activeTheme === "breeze"
         }
@@ -166,8 +168,8 @@ Item {
         Item {
             id: classicFlagIcon
             anchors.centerIn: parent
-            width: gameScreen.calculatedCellSize * 0.6
-            height: gameScreen.calculatedCellSize * 0.6
+            width: Math.floor(cellSize * 0.6)
+            height: Math.floor(cellSize * 0.6)
             visible: cellData && !cellData.isRevealed && cellData.isFlagged && configManager.activeTheme === "classic"
 
             Rectangle {
@@ -204,8 +206,8 @@ Item {
         Rectangle {
             id: breezeFlagIcon
             anchors.centerIn: parent
-            width: gameScreen.calculatedCellSize * 0.35
-            height: gameScreen.calculatedCellSize * 0.35
+            width: Math.floor(cellSize * 0.35)
+            height: Math.floor(cellSize * 0.35)
             radius: 2
             color: "#ff4444"
             visible: cellData && !cellData.isRevealed && cellData.isFlagged && configManager.activeTheme === "breeze"

@@ -24,17 +24,17 @@ void GameBoard::clearBoard()
     m_cells.clear();
 }
 
-void GameBoard::initializeBoard(int rows, int cols, int mines)
+void GameBoard::initializeBoard(const QSize &size, int mines)
 {
     clearBoard();
-    m_rows = rows;
-    m_cols = cols;
+    m_rows = size.height();
+    m_cols = size.width();
     m_totalMines = mines;
 
-    for (int r = 0; r < m_rows; ++r) {
+    for (int row = 0; row < m_rows; ++row) {
         QList<Cell*> rowList;
-        for (int c = 0; c < m_cols; ++c) {
-            rowList.append(new Cell(r, c, this));
+        for (int col = 0; col < m_cols; ++col) {
+            rowList.append(new Cell(row, col, this));
         }
         m_cells.append(rowList);
     }
@@ -54,9 +54,11 @@ QList<Cell*> GameBoard::getNeighbors(int row, int col) const
     QList<Cell*> neighbors;
     for (int dr = -1; dr <= 1; ++dr) {
         for (int dc = -1; dc <= 1; ++dc) {
-            if (dr == 0 && dc == 0) continue;
+            if (dr == 0 && dc == 0) {
+                continue;
+            }
             Cell* neighbor = getCell(row + dr, col + dc);
-            if (neighbor) {
+            if (neighbor != nullptr) {
                 neighbors.append(neighbor);
             }
         }
@@ -66,23 +68,23 @@ QList<Cell*> GameBoard::getNeighbors(int row, int col) const
 
 void GameBoard::placeRandomMines(int startRow, int startCol)
 {
-    for (int r = 0; r < m_rows; ++r) {
-        for (int c = 0; c < m_cols; ++c) {
-            m_cells[r][c]->setMine(false);
+    for (int row = 0; row < m_rows; ++row) {
+        for (int col = 0; col < m_cols; ++col) {
+            m_cells[row][col]->setMine(false);
         }
     }
 
     int placed = 0;
     while (placed < m_totalMines) {
-        int r = QRandomGenerator::global()->bounded(m_rows);
-        int c = QRandomGenerator::global()->bounded(m_cols);
+        int row = QRandomGenerator::global()->bounded(m_rows);
+        int col = QRandomGenerator::global()->bounded(m_cols);
 
-        if (qAbs(r - startRow) <= 1 && qAbs(c - startCol) <= 1) {
+        if (qAbs(row - startRow) <= 1 && qAbs(col - startCol) <= 1) {
             continue;
         }
 
-        if (!m_cells[r][c]->isMine()) {
-            m_cells[r][c]->setMine(true);
+        if (!m_cells[row][col]->isMine()) {
+            m_cells[row][col]->setMine(true);
             placed++;
         }
     }
@@ -90,13 +92,15 @@ void GameBoard::placeRandomMines(int startRow, int startCol)
 
 void GameBoard::calculateAdjacentMines()
 {
-    for (int r = 0; r < m_rows; ++r) {
-        for (int c = 0; c < m_cols; ++c) {
-            Cell* cell = m_cells[r][c];
-            if (cell->isMine()) continue;
+    for (int row = 0; row < m_rows; ++row) {
+        for (int col = 0; col < m_cols; ++col) {
+            Cell* cell = m_cells[row][col];
+            if (cell->isMine()) {
+                continue;
+            }
 
             int count = 0;
-            for (Cell* neighbor : getNeighbors(r, c)) {
+            for (Cell* neighbor : getNeighbors(row, col)) {
                 if (neighbor->isMine()) {
                     count++;
                 }
@@ -106,69 +110,84 @@ void GameBoard::calculateAdjacentMines()
     }
 }
 
+void GameBoard::cascadeReveal(QList<QList<bool>> &revealed, QList<QList<bool>> &flagged, int row, int col) const
+{
+    if (revealed[row][col] || flagged[row][col]) {
+        return;
+    }
+    revealed[row][col] = true;
+    Cell* cell = getCell(row, col);
+    if (cell != nullptr && cell->adjacentMines() == 0) {
+        for (Cell* neighbor : getNeighbors(row, col)) {
+            cascadeReveal(revealed, flagged, neighbor->row(), neighbor->col());
+        }
+    }
+}
+
+bool GameBoard::checkAndApplyRules(QList<QList<bool>> &revealed, QList<QList<bool>> &flagged, int row, int col)
+{
+    if (!revealed[row][col] || m_cells[row][col]->adjacentMines() == 0) {
+        return false;
+    }
+
+    Cell* cell = m_cells[row][col];
+    QList<Cell*> neighbors = getNeighbors(row, col);
+
+    int flagCount = 0;
+    int unrevealedCount = 0;
+    QList<Cell*> unrevealedNeighbors;
+
+    for (Cell* neighbor : neighbors) {
+        if (flagged[neighbor->row()][neighbor->col()]) {
+            flagCount++;
+        } else if (!revealed[neighbor->row()][neighbor->col()]) {
+            unrevealedCount++;
+            unrevealedNeighbors.append(neighbor);
+        }
+    }
+
+    bool changed = false;
+
+    if (cell->adjacentMines() == flagCount + unrevealedCount && unrevealedCount > 0) {
+        for (Cell* neighbor : unrevealedNeighbors) {
+            flagged[neighbor->row()][neighbor->col()] = true;
+        }
+        changed = true;
+    }
+
+    if (cell->adjacentMines() == flagCount && unrevealedCount > 0) {
+        for (Cell* neighbor : unrevealedNeighbors) {
+            cascadeReveal(revealed, flagged, neighbor->row(), neighbor->col());
+        }
+        changed = true;
+    }
+
+    return changed;
+}
+
 bool GameBoard::isBoardSolvable(int startRow, int startCol)
 {
     QList<QList<bool>> solvedRevealed(m_rows, QList<bool>(m_cols, false));
     QList<QList<bool>> solvedFlagged(m_rows, QList<bool>(m_cols, false));
 
-    auto cascadeReveal = [&](auto& self, int r, int c) -> void {
-        if (solvedRevealed[r][c] || solvedFlagged[r][c]) return;
-        solvedRevealed[r][c] = true;
-        if (m_cells[r][c]->adjacentMines() == 0) {
-            for (Cell* neighbor : getNeighbors(r, c)) {
-                self(self, neighbor->row(), neighbor->col());
-            }
-        }
-    };
-
-    cascadeReveal(cascadeReveal, startRow, startCol);
+    cascadeReveal(solvedRevealed, solvedFlagged, startRow, startCol);
 
     bool changed = true;
     while (changed) {
         changed = false;
 
-        for (int r = 0; r < m_rows; ++r) {
-            for (int c = 0; c < m_cols; ++c) {
-                if (!solvedRevealed[r][c] || m_cells[r][c]->adjacentMines() == 0) {
-                    continue;
-                }
-
-                Cell* cell = m_cells[r][c];
-                QList<Cell*> neighbors = getNeighbors(r, c);
-
-                int flagCount = 0;
-                int unrevealedCount = 0;
-                QList<Cell*> unrevealedNeighbors;
-
-                for (Cell* n : neighbors) {
-                    if (solvedFlagged[n->row()][n->col()]) {
-                        flagCount++;
-                    } else if (!solvedRevealed[n->row()][n->col()]) {
-                        unrevealedCount++;
-                        unrevealedNeighbors.append(n);
-                    }
-                }
-
-                if (cell->adjacentMines() == flagCount + unrevealedCount && unrevealedCount > 0) {
-                    for (Cell* n : unrevealedNeighbors) {
-                        solvedFlagged[n->row()][n->col()] = true;
-                    }
-                    changed = true;
-                }
-
-                if (cell->adjacentMines() == flagCount && unrevealedCount > 0) {
-                    for (Cell* n : unrevealedNeighbors) {
-                        cascadeReveal(cascadeReveal, n->row(), n->col());
-                    }
+        for (int row = 0; row < m_rows; ++row) {
+            for (int col = 0; col < m_cols; ++col) {
+                if (checkAndApplyRules(solvedRevealed, solvedFlagged, row, col)) {
                     changed = true;
                 }
             }
         }
     }
 
-    for (int r = 0; r < m_rows; ++r) {
-        for (int c = 0; c < m_cols; ++c) {
-            if (!m_cells[r][c]->isMine() && !solvedRevealed[r][c]) {
+    for (int row = 0; row < m_rows; ++row) {
+        for (int col = 0; col < m_cols; ++col) {
+            if (!m_cells[row][col]->isMine() && !solvedRevealed[row][col]) {
                 return false;
             }
         }

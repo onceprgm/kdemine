@@ -14,10 +14,10 @@ GameEngine::GameEngine(QObject *parent)
 int GameEngine::minesRemaining() const
 {
     int flags = 0;
-    for (int r = 0; r < m_board.rows(); ++r) {
-        for (int c = 0; c < m_board.cols(); ++c) {
-            Cell* cell = m_board.getCell(r, c);
-            if (cell && cell->isFlagged()) {
+    for (int row = 0; row < m_board.rows(); ++row) {
+        for (int col = 0; col < m_board.cols(); ++col) {
+            Cell* cell = m_board.getCell(row, col);
+            if (cell != nullptr && cell->isFlagged()) {
                 flags++;
             }
         }
@@ -49,7 +49,7 @@ void GameEngine::startNewGame(const QString &difficulty)
         mines = 99;
     }
 
-    m_board.initializeBoard(rows, cols, mines);
+    m_board.initializeBoard(QSize(cols, rows), mines);
     emit minesRemainingChanged();
 }
 
@@ -63,7 +63,7 @@ void GameEngine::startCustomGame(int rows, int cols, int mines)
     m_gameState = "idle";
     emit gameStateChanged();
 
-    m_board.initializeBoard(rows, cols, mines);
+    m_board.initializeBoard(QSize(cols, rows), mines);
     emit minesRemainingChanged();
 }
 
@@ -74,7 +74,7 @@ void GameEngine::revealCell(int row, int col)
     }
 
     Cell* cell = m_board.getCell(row, col);
-    if (!cell || cell->isRevealed() || cell->isFlagged()) {
+    if (cell == nullptr || cell->isRevealed() || cell->isFlagged()) {
         return;
     }
 
@@ -105,7 +105,7 @@ void GameEngine::revealCell(int row, int col)
 void GameEngine::revealCascade(int row, int col)
 {
     Cell* cell = m_board.getCell(row, col);
-    if (!cell || cell->isRevealed() || cell->isFlagged()) {
+    if (cell == nullptr || cell->isRevealed() || cell->isFlagged()) {
         return;
     }
 
@@ -114,7 +114,9 @@ void GameEngine::revealCascade(int row, int col)
     if (cell->adjacentMines() == 0) {
         for (int dr = -1; dr <= 1; ++dr) {
             for (int dc = -1; dc <= 1; ++dc) {
-                if (dr == 0 && dc == 0) continue;
+                if (dr == 0 && dc == 0) {
+                    continue;
+                }
                 revealCascade(row + dr, col + dc);
             }
         }
@@ -128,7 +130,7 @@ void GameEngine::flagCell(int row, int col)
     }
 
     Cell* cell = m_board.getCell(row, col);
-    if (!cell || cell->isRevealed()) {
+    if (cell == nullptr || cell->isRevealed()) {
         return;
     }
 
@@ -139,10 +141,10 @@ void GameEngine::flagCell(int row, int col)
 void GameEngine::checkWinCondition()
 {
     int unrevealedCount = 0;
-    for (int r = 0; r < m_board.rows(); ++r) {
-        for (int c = 0; c < m_board.cols(); ++c) {
-            Cell* cell = m_board.getCell(r, c);
-            if (cell && !cell->isRevealed()) {
+    for (int row = 0; row < m_board.rows(); ++row) {
+        for (int col = 0; col < m_board.cols(); ++col) {
+            Cell* cell = m_board.getCell(row, col);
+            if (cell != nullptr && !cell->isRevealed()) {
                 unrevealedCount++;
             }
         }

@@ -89,11 +89,14 @@ void ConfigManager::playCustomSound(const QString &soundFile)
     if (QFileInfo::exists(path)) {
         QProcess::startDetached("paplay", QStringList() << path);
     } else {
-        std::cout << "Warning: Sound file not found at " << path.toStdString() << std::endl;
+        std::cout << "Warning: Sound file not found at " << path.toStdString() << "\n";
     }
 }
 
 void ConfigManager::playSound(const QString &soundName)
 {
+    if (m_activeTheme.isEmpty()) {
+        return;
+    }
     playCustomSound(soundName);
 }

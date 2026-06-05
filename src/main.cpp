@@ -11,12 +11,12 @@ int main(int argc, char *argv[])
 {
     // TODO: Parse CLI arguments for window manager widget mode
 
-    QGuiApplication app(argc, argv);
-    app.setOrganizationName("KDEMineProject");
-    app.setApplicationName("kdemine");
-    app.setDesktopFileName("kdemine");
+    QGuiApplication::setOrganizationName("KDEMineProject");
+    QGuiApplication::setApplicationName("kdemine");
+    QGuiApplication::setDesktopFileName("kdemine");
+    QGuiApplication::setWindowIcon(QIcon(u"qrc:/qt/qml/kdemine/qml/assets/icon.png"_s));
 
-    app.setWindowIcon(QIcon(u"qrc:/qt/qml/kdemine/qml/assets/icon.png"_s));
+    QGuiApplication app(argc, argv);
 
     ConfigManager configManager;
     GameEngine gameEngine;
@@ -36,5 +36,5 @@ int main(int argc, char *argv[])
     
     engine.load(url);
 
-    return app.exec();
+    return QGuiApplication::exec();
 }
