@@ -11,21 +11,9 @@ Window {
     visible: true
     title: "KDE Mine"
 
-    property string activeTheme: configManager.activeTheme
-    property string activeLanguage: configManager.activeLanguage
-    property string currentScreen: "menu"
-
-    property color backgroundColor: activeTheme === "classic" ? "#c0c0c0" : "#16161e"
-    property color panelColor: activeTheme === "classic" ? "#c0c0c0" : "#1e1e2a"
-    property color textColor: activeTheme === "classic" ? "#000000" : "#ffffff"
-    property color accentColor: activeTheme === "classic" ? "#000080" : "#d9534f"
-    property int elementRadius: activeTheme === "classic" ? 0 : 6
-
-    property var translations: configManager.translations
-
     Rectangle {
         anchors.fill: parent
-        color: mainWindow.backgroundColor
+        color: configManager.backgroundColor
         z: -1
     }
 

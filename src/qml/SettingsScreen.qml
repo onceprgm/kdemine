@@ -28,7 +28,7 @@ Column {
         background: Rectangle {
             color: tBtn.down || tBtn.checked ? (configManager.activeTheme === "classic" ? "#b0b0b0" : "#2a2a3d") : configManager.panelColor
             radius: configManager.elementRadius
-            border.width: mainWindow.activeTheme === "breeze" ? 1 : 0
+            border.width: configManager.activeTheme === "breeze" ? 1 : 0
             border.color: tBtn.hovered || tBtn.checked ? configManager.accentColor : "#353547"
 
             Rectangle {

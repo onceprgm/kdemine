@@ -19,5 +19,6 @@
     "cols": "Columns",
     "launch": "Launch Game",
     "mines": "Mines",
-    "time": "Time"
+    "time": "Time",
+    "not_guess_free": "Could not generate a guess-free board, guessing may be required"
 }

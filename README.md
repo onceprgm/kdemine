@@ -1,17 +1,24 @@
 # KDE Mine
 
-A native, guess-free Minesweeper clone built with Qt 6 (QML) and C++20, optimized specifically for Linux/KDE Plasma desktops.
+A native, guess-free Minesweeper clone built with Qt 6 (QML) and C++20, designed for Linux/KDE Plasma desktops.
 
 ## Features
-*   **Guess-Free Board Generation:** Mathematical solver verification on first click.
-*   **Auto-Scaling Grid:** Grid cells automatically scale down to fit any window size.
-*   **Two UI Themes:** Choose between modern Breeze Dark and Classic Retro (Windows 95 style).
-*   **Low-Latency Audio:** Audio cues played natively via PulseAudio/PipeWire.
-*   **XDG Configuration:** Settings are stored in accordance with system standards.
+
+- **Guess-Free Board Generation:** On first click, a constraint-based solver verifies the board is logically solvable without guessing. If a solvable layout cannot be found within 1000 attempts, the game continues with a standard random board and displays a warning.
+- **Auto-Scaling Grid:** Grid cells automatically scale to fit any window size.
+- **Two UI Themes:** Modern Breeze Dark and Classic Retro (Windows 95 style).
+- **Three Languages:** English, Russian, Chinese.
+- **Low-Latency Audio:** Sound cues played natively via PulseAudio/PipeWire (`paplay`).
+- **XDG Configuration:** Settings stored in `~/.config/KDEMineProject/kdemine.ini`.
 
 ## How to Build
 
 ### 1. Install Dependencies
+
+#### Arch Linux
+```bash
+sudo pacman -S --needed base-devel cmake ninja clang qt6-base qt6-declarative extra-cmake-modules
+```
 
 #### Debian / Ubuntu
 ```bash
@@ -23,22 +30,41 @@ sudo apt install build-essential cmake ninja-build clang qt6-base-dev qt6-declar
 sudo dnf install gcc-c++ cmake ninja-build clang qt6-qtbase-devel qt6-qtdeclarative-devel extra-cmake-modules
 ```
 
-#### Arch Linux
+### 2. Build
+
 ```bash
-sudo pacman -S --needed base-devel cmake ninja clang qt6-base qt6-declarative extra-cmake-modules
+./build.sh
 ```
 
-### 2. Compilation
+Builds in Release mode by default. Pass `Debug` for a debug build:
+
+```bash
+./build.sh Debug
+```
+
+Or manually:
+
 ```bash
 cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ```
 
+### 3. Run
+
+```bash
+./build/kdemine
+```
+
 ## Installation
-Run the local installer script (this copies the binary, copies the custom landmine icon, and registers the desktop application menu shortcut):
+
+Installs the binary, assets, icon, and `.desktop` entry to `~/.local/`:
+
 ```bash
 ./install.sh
 ```
 
+After installation, launch via `kdemine` in the terminal or from the application menu as **KDE Mine**.
+
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+MIT — see [LICENSE](LICENSE).

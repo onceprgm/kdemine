@@ -26,7 +26,7 @@ public:
     int totalMines() const { return m_totalMines; }
 
     void initializeBoard(const QSize &size, int mines);
-    void generateGuessFreeBoard(int startRow, int startCol);
+    bool generateGuessFreeBoard(int startRow, int startCol);
     
     Q_INVOKABLE Cell* getCell(int row, int col) const;
 

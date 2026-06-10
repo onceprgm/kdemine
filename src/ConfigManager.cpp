@@ -85,6 +85,10 @@ void ConfigManager::openConfigFolder()
 
 void ConfigManager::playCustomSound(const QString &soundFile)
 {
+    if (soundFile.contains('/') || soundFile.contains('\\') || soundFile.contains("..")) {
+        return;
+    }
+
     QString path = QCoreApplication::applicationDirPath() + "/qml/assets/" + soundFile;
     if (QFileInfo::exists(path)) {
         QProcess::startDetached("paplay", QStringList() << path);

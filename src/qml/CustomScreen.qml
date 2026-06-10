@@ -70,7 +70,7 @@ Column {
         anchors.horizontalCenter: parent.horizontalCenter
 
         Text {
-            text: ((configManager.translations && configManager.translations["theme"] === "UI Theme" ? "Mines" : "Мины") || "") + ": " + sliderMines.value
+            text: ((configManager.translations && configManager.translations["mines"]) || "") + ": " + sliderMines.value
             color: configManager.textColor
             font.bold: true
             font.pixelSize: 14

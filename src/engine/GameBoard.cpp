@@ -1,4 +1,5 @@
 #include "GameBoard.h"
+#include <QPoint>
 #include <QRandomGenerator>
 
 GameBoard::GameBoard(QObject *parent)
@@ -27,9 +28,9 @@ void GameBoard::clearBoard()
 void GameBoard::initializeBoard(const QSize &size, int mines)
 {
     clearBoard();
-    m_rows = size.height();
-    m_cols = size.width();
-    m_totalMines = mines;
+    m_rows = qMax(1, size.height());
+    m_cols = qMax(1, size.width());
+    m_totalMines = qBound(1, mines, qMax(1, (m_rows * m_cols) - 9));
 
     for (int row = 0; row < m_rows; ++row) {
         QList<Cell*> rowList;
@@ -112,14 +113,20 @@ void GameBoard::calculateAdjacentMines()
 
 void GameBoard::cascadeReveal(QList<QList<bool>> &revealed, QList<QList<bool>> &flagged, int row, int col) const
 {
-    if (revealed[row][col] || flagged[row][col]) {
-        return;
-    }
-    revealed[row][col] = true;
-    Cell* cell = getCell(row, col);
-    if (cell != nullptr && cell->adjacentMines() == 0) {
-        for (Cell* neighbor : getNeighbors(row, col)) {
-            cascadeReveal(revealed, flagged, neighbor->row(), neighbor->col());
+    QList<QPoint> stack;
+    stack.append(QPoint(row, col));
+
+    while (!stack.isEmpty()) {
+        QPoint pos = stack.takeLast();
+        Cell* cell = getCell(pos.x(), pos.y());
+        if (cell == nullptr || revealed[pos.x()][pos.y()] || flagged[pos.x()][pos.y()]) {
+            continue;
+        }
+        revealed[pos.x()][pos.y()] = true;
+        if (cell->adjacentMines() == 0) {
+            for (Cell* neighbor : getNeighbors(pos.x(), pos.y())) {
+                stack.append(QPoint(neighbor->row(), neighbor->col()));
+            }
         }
     }
 }
@@ -196,17 +203,18 @@ bool GameBoard::isBoardSolvable(int startRow, int startCol)
     return true;
 }
 
-void GameBoard::generateGuessFreeBoard(int startRow, int startCol)
+bool GameBoard::generateGuessFreeBoard(int startRow, int startCol)
 {
     const int maxAttempts = 1000;
     for (int attempt = 0; attempt < maxAttempts; ++attempt) {
         placeRandomMines(startRow, startCol);
         calculateAdjacentMines();
         if (isBoardSolvable(startRow, startCol)) {
-            return;
+            return true;
         }
     }
-    
+
     placeRandomMines(startRow, startCol);
     calculateAdjacentMines();
+    return false;
 }

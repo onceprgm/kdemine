@@ -12,6 +12,7 @@ class GameEngine : public QObject
     Q_PROPERTY(QString gameState READ gameState NOTIFY gameStateChanged)
     Q_PROPERTY(int elapsedTime READ elapsedTime NOTIFY elapsedTimeChanged)
     Q_PROPERTY(int minesRemaining READ minesRemaining NOTIFY minesRemainingChanged)
+    Q_PROPERTY(bool isGuessFree READ isGuessFree NOTIFY isGuessFreeChanged)
 
 public:
     explicit GameEngine(QObject *parent = nullptr);
@@ -20,6 +21,7 @@ public:
     QString gameState() const { return m_gameState; }
     int elapsedTime() const { return m_elapsedTime; }
     int minesRemaining() const;
+    bool isGuessFree() const { return m_isGuessFree; }
 
     Q_INVOKABLE void startNewGame(const QString &difficulty);
     Q_INVOKABLE void startCustomGame(int rows, int cols, int mines);
@@ -30,6 +32,7 @@ signals:
     void gameStateChanged();
     void elapsedTimeChanged();
     void minesRemainingChanged();
+    void isGuessFreeChanged();
 
 private slots:
     void onTimerTick();
@@ -43,4 +46,5 @@ private:
     int m_elapsedTime;
     QTimer* m_timer;
     bool m_isFirstClick;
+    bool m_isGuessFree;
 };

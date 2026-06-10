@@ -176,6 +176,15 @@ Column {
         }
     }
 
+    Text {
+        visible: !gameEngine.isGuessFree && gameEngine.gameState === "playing"
+        text: "⚠ " + ((configManager.translations && configManager.translations["not_guess_free"]) || "")
+        color: configManager.accentColor
+        font.pixelSize: 12
+        font.family: configManager.activeTheme === "classic" ? Style.classicFont : Style.modernFont
+        anchors.horizontalCenter: parent.horizontalCenter
+    }
+
     Rectangle {
         id: gridContainer
         width: gridColumn.width + (configManager.activeTheme === "classic" ? 8 : 16)

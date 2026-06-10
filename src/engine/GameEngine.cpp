@@ -1,5 +1,6 @@
 #include "GameEngine.h"
 #include "../ConfigManager.h"
+#include <QPoint>
 
 GameEngine::GameEngine(QObject *parent)
     : QObject(parent)
@@ -7,6 +8,7 @@ GameEngine::GameEngine(QObject *parent)
     , m_elapsedTime(0)
     , m_timer(new QTimer(this))
     , m_isFirstClick(true)
+    , m_isGuessFree(true)
 {
     connect(m_timer, &QTimer::timeout, this, &GameEngine::onTimerTick);
 }
@@ -55,6 +57,10 @@ void GameEngine::startNewGame(const QString &difficulty)
 
 void GameEngine::startCustomGame(int rows, int cols, int mines)
 {
+    if (rows < 1 || cols < 1 || mines < 1) {
+        return;
+    }
+
     m_timer->stop();
     m_elapsedTime = 0;
     emit elapsedTimeChanged();
@@ -82,7 +88,11 @@ void GameEngine::revealCell(int row, int col)
 
     if (m_isFirstClick) {
         m_isFirstClick = false;
-        m_board.generateGuessFreeBoard(row, col);
+        bool guessFree = m_board.generateGuessFreeBoard(row, col);
+        if (m_isGuessFree != guessFree) {
+            m_isGuessFree = guessFree;
+            emit isGuessFreeChanged();
+        }
         m_gameState = "playing";
         emit gameStateChanged();
         m_timer->start(1000);
@@ -104,20 +114,26 @@ void GameEngine::revealCell(int row, int col)
 
 void GameEngine::revealCascade(int row, int col)
 {
-    Cell* cell = m_board.getCell(row, col);
-    if (cell == nullptr || cell->isRevealed() || cell->isFlagged()) {
-        return;
-    }
+    QList<QPoint> stack;
+    stack.append(QPoint(row, col));
 
-    cell->setRevealed(true);
+    while (!stack.isEmpty()) {
+        QPoint pos = stack.takeLast();
+        Cell* cell = m_board.getCell(pos.x(), pos.y());
+        if (cell == nullptr || cell->isRevealed() || cell->isFlagged()) {
+            continue;
+        }
 
-    if (cell->adjacentMines() == 0) {
-        for (int dr = -1; dr <= 1; ++dr) {
-            for (int dc = -1; dc <= 1; ++dc) {
-                if (dr == 0 && dc == 0) {
-                    continue;
+        cell->setRevealed(true);
+
+        if (cell->adjacentMines() == 0) {
+            for (int dr = -1; dr <= 1; ++dr) {
+                for (int dc = -1; dc <= 1; ++dc) {
+                    if (dr == 0 && dc == 0) {
+                        continue;
+                    }
+                    stack.append(QPoint(pos.x() + dr, pos.y() + dc));
                 }
-                revealCascade(row + dr, col + dc);
             }
         }
     }
